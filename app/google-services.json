@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "543559884017",
+    "firebase_url": "https://graduateproject-3d15c.firebaseio.com",
+    "project_id": "graduateproject-3d15c",
+    "storage_bucket": "graduateproject-3d15c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:543559884017:android:e7e29b72af0755c4dc1d50",
+        "android_client_info": {
+          "package_name": "com.example.graduateproejct"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "543559884017-jnqpogf1f2g3apah565kbpm81k1jrkmo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmA8pWs1U-hJJoXuN93PVgO7ZBKC_ZntI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "543559884017-jnqpogf1f2g3apah565kbpm81k1jrkmo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
