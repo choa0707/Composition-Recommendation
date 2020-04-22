@@ -16,6 +16,9 @@ package com.example.graduateproejct.common;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -160,7 +163,7 @@ public class CameraSourcePreview extends ViewGroup {
       childHeight = layoutHeight;
       childWidth = (int) (((float) layoutHeight / (float) height) * width);
     }
-
+    Log.i("카메라 크기", Integer.toString(layoutWidth)+", "+ Integer.toString(layoutHeight));
     for (int i = 0; i < getChildCount(); ++i) {
       getChildAt(i).layout(0, 0, childWidth, childHeight);
       Log.d(TAG, "Assigned view: " + i);

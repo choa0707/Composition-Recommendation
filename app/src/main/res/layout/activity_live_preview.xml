@@ -45,15 +45,22 @@
       <Spinner
           android:id="@+id/spinner"
           android:layout_width="wrap_content"
+
           android:layout_height="wrap_content"
           android:layout_gravity="center" />
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Face Detection"
+            android:textColor="@android:color/white"
+            android:textSize="20dp"
+            android:layout_gravity="center"
+            ></TextView>
       <ToggleButton
           android:id="@+id/facingSwitch"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:layout_gravity="center_vertical"
-          android:background="@layout/toggle_style"
           android:textOff=""
           android:textOn=""
           android:checked="false" />

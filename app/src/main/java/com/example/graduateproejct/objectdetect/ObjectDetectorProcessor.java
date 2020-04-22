@@ -1,4 +1,4 @@
-package com.google.firebase.samples.apps.mlkit.java.objectdetection;
+package com.example.graduateproejct.objectdetect;
 
 import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
@@ -11,10 +11,10 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.objects.FirebaseVisionObject;
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetector;
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions;
-import com.google.firebase.samples.apps.mlkit.common.CameraImageGraphic;
-import com.google.firebase.samples.apps.mlkit.common.FrameMetadata;
-import com.google.firebase.samples.apps.mlkit.common.GraphicOverlay;
-import com.google.firebase.samples.apps.mlkit.java.VisionProcessorBase;
+import com.example.graduateproejct.Helper.VisionProcessorBase;
+import com.example.graduateproejct.common.CameraImageGraphic;
+import com.example.graduateproejct.common.FrameMetadata;
+import com.example.graduateproejct.common.GraphicOverlay;
 
 import java.io.IOException;
 import java.util.List;

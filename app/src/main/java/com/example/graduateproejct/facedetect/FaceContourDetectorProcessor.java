@@ -23,8 +23,8 @@ import java.util.List;
 /**
  * Face Contour Demo.
  */
-public abstract class FaceContourDetectorProcessor extends VisionProcessorBase<List<FirebaseVisionFace>> {
-
+public class FaceContourDetectorProcessor extends VisionProcessorBase<List<FirebaseVisionFace>> {
+    int forcount = 0;
     private static final String TAG = "FaceContourDetectorProc";
 
     private final FirebaseVisionFaceDetector detector;
@@ -64,12 +64,17 @@ public abstract class FaceContourDetectorProcessor extends VisionProcessorBase<L
             CameraImageGraphic imageGraphic = new CameraImageGraphic(graphicOverlay, originalCameraImage);
             graphicOverlay.add(imageGraphic);
         }
-        for (int i = 0; i < faces.size(); ++i) {
-            FirebaseVisionFace face = faces.get(i);
-            FaceContourGraphic faceGraphic = new FaceContourGraphic(graphicOverlay, face);
-            graphicOverlay.add(faceGraphic);
+        forcount++;
+        if (forcount >= 2100000000) forcount = 0;
+        else if (forcount % 10 == 0) {
+            for (int i = 0; i < faces.size(); ++i) {
+                FirebaseVisionFace face = faces.get(i);
+                FaceContourGraphic faceGraphic = new FaceContourGraphic(graphicOverlay, face);
+                graphicOverlay.add(faceGraphic);
+            }
+            graphicOverlay.postInvalidate();
         }
-        graphicOverlay.postInvalidate();
+
     }
 
     @Override

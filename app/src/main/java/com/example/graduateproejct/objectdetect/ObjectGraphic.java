@@ -1,4 +1,4 @@
-package com.google.firebase.samples.apps.mlkit.java.objectdetection;
+package com.example.graduateproejct.objectdetect;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,8 +7,8 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 
 import com.google.firebase.ml.vision.objects.FirebaseVisionObject;
-import com.google.firebase.samples.apps.mlkit.common.GraphicOverlay;
-import com.google.firebase.samples.apps.mlkit.common.GraphicOverlay.Graphic;
+import com.example.graduateproejct.common.GraphicOverlay;
+import com.example.graduateproejct.common.GraphicOverlay.Graphic;
 
 /** Draw the detected object info in preview. */
 public class ObjectGraphic extends Graphic {

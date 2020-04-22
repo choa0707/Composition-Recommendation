@@ -16,6 +16,7 @@ package com.example.graduateproejct.common;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.vision.CameraSource;
@@ -159,6 +160,7 @@ public class GraphicOverlay extends View {
   }
 
   /** Draws the overlay with its associated graphic objects. */
+
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
@@ -166,7 +168,9 @@ public class GraphicOverlay extends View {
     synchronized (lock) {
       if ((previewWidth != 0) && (previewHeight != 0)) {
         widthScaleFactor = (float) getWidth() / previewWidth;
+        //Log.i("test", " "+widthScaleFactor+" "+previewWidth+" "+getWidth());
         heightScaleFactor = (float) getHeight() / previewHeight;
+        //Log.i("test", " "+heightScaleFactor+" "+previewHeight+" "+getHeight());
       }
 
       for (Graphic graphic : graphics) {

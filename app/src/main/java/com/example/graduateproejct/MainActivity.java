@@ -17,9 +17,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +40,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.core.content.ContextCompat;
 
-import com.example.graduateproejct.facedetect.*;
+import com.example.graduateproejct.objectdetect.ObjectDetectorProcessor;
 import com.google.android.gms.common.annotation.KeepName;
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions;
 import com.example.graduateproejct.common.CameraSource;
@@ -58,14 +61,14 @@ import java.util.List;
  * set up continuous frame processing on frames from a camera source.
  */
 @KeepName
-public final class LivePreviewActivity extends AppCompatActivity
+public final class MainActivity extends AppCompatActivity
         implements OnRequestPermissionsResultCallback,
         OnItemSelectedListener,
         CompoundButton.OnCheckedChangeListener {
     private static final String FACE_DETECTION = "Face Detection";
     private static final String OBJECT_DETECTION = "Object Detection";
     private static final String FACE_CONTOUR = "Face Contour";
-    private static final String TAG = "LivePreviewActivity";
+    private static final String TAG = "MainActivity";
     private static final int PERMISSION_REQUESTS = 1;
 
     private CameraSource cameraSource = null;
@@ -78,6 +81,11 @@ public final class LivePreviewActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_live_preview);
+        Display display = getWindowManager().getDefaultDisplay();
+
+        Point size = new Point();
+
+        display.getSize(size);
 
         preview = findViewById(R.id.firePreview);
         if (preview == null) {
@@ -92,7 +100,7 @@ public final class LivePreviewActivity extends AppCompatActivity
         List<String> options = new ArrayList<>();
         options.add(FACE_CONTOUR);
         options.add(FACE_DETECTION);
-        options.add(OBJECT_DETECTION);
+        //options.add(OBJECT_DETECTION);
 
         // Creating adapter for spinner
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_style,
@@ -105,6 +113,8 @@ public final class LivePreviewActivity extends AppCompatActivity
 
         ToggleButton facingSwitch = findViewById(R.id.facingSwitch);
         facingSwitch.setOnCheckedChangeListener(this);
+        //facingSwitch.setVisibility(View.INVISIBLE);
+        facingSwitch.setBackgroundColor(Color.TRANSPARENT);
         // Hide the toggle button if there is only 1 camera
         if (Camera.getNumberOfCameras() == 1) {
             facingSwitch.setVisibility(View.GONE);
@@ -143,6 +153,8 @@ public final class LivePreviewActivity extends AppCompatActivity
         if (cameraSource != null) {
             if (isChecked) {
                 cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
+                Log.i("size", "width: "+cameraSource.getPreviewSize().getWidth());
+                Log.i("size", "height: "+cameraSource.getPreviewSize().getHeight());
             } else {
                 cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
             }
@@ -183,6 +195,21 @@ public final class LivePreviewActivity extends AppCompatActivity
                     cameraSource.setMachineLearningFrameProcessor(new FaceDetectionProcessor(getResources()));
                     break;
 
+                case OBJECT_DETECTION:
+                    Log.i(TAG, "Using Object Detector Processor");
+                    FirebaseVisionObjectDetectorOptions objectDetectorOptions =
+                            new FirebaseVisionObjectDetectorOptions.Builder()
+                                    .setDetectorMode(FirebaseVisionObjectDetectorOptions.STREAM_MODE)
+                                    .enableClassification().build();
+                    Log.i(TAG, "Using Object Detector Processor2");
+                    cameraSource.setMachineLearningFrameProcessor(
+                            new ObjectDetectorProcessor(objectDetectorOptions));
+                    break;
+
+                case FACE_CONTOUR:
+                    Log.i(TAG, "Using Face Contour Detector Processor");
+                    cameraSource.setMachineLearningFrameProcessor(new FaceContourDetectorProcessor());
+                    break;
                 default:
                     Log.e(TAG, "Unknown model: " + model);
             }

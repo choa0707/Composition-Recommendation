@@ -17,6 +17,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.media.FaceDetector;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -92,8 +93,9 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
             int cameraFacing =
                     frameMetadata != null ? frameMetadata.getCameraFacing() :
                             Camera.CameraInfo.CAMERA_FACING_BACK;
-            Log.e("tilt test", "Y : "+Float.toString(face.getHeadEulerAngleY()));
-            Log.e("tilt test", "Z : "+Float.toString(face.getHeadEulerAngleZ()));
+            Log.i("tilt test", "Y : "+Float.toString(face.getHeadEulerAngleY()));
+            Log.i("tilt test", "Z : "+Float.toString(face.getHeadEulerAngleZ()));
+
             FaceGraphic faceGraphic = new FaceGraphic(graphicOverlay, face, cameraFacing, overlayBitmap);
             graphicOverlay.add(faceGraphic);
         }

@@ -115,10 +115,13 @@ public class CameraSourcePreview extends ViewGroup {
         if (mCameraSource != null) {
             Size size = mCameraSource.getPreviewSize();
             if (size != null) {
+
                 width = size.getWidth();
                 height = size.getHeight();
+
             }
         }
+
 
         // Swap width and height sizes when in portrait, since it will be rotated 90 degrees
         if (isPortraitMode()) {
