@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.graduateproejct.MyApplication;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
@@ -65,17 +66,19 @@ public class FaceContourDetectorProcessor extends VisionProcessorBase<List<Fireb
             graphicOverlay.add(imageGraphic);
         }
         forcount++;
-        if (forcount >= 2100000000) forcount = 0;
-        else if (forcount % 10 == 0) {
-            for (int i = 0; i < faces.size(); ++i) {
-                FirebaseVisionFace face = faces.get(i);
-                FaceContourGraphic faceGraphic = new FaceContourGraphic(graphicOverlay, face);
-                graphicOverlay.add(faceGraphic);
+        if (forcount >= 2100000000) { forcount = 0;}
+        else {
+            if(forcount%40 == 0) {
+                for (int i = 0; i < faces.size(); ++i) {
+                    FirebaseVisionFace face = faces.get(i);
+                    FaceContourGraphic faceGraphic = new FaceContourGraphic(graphicOverlay, face);
+                    graphicOverlay.add(faceGraphic);
+                }
+                graphicOverlay.postInvalidate();
             }
-            graphicOverlay.postInvalidate();
         }
-
     }
+
 
     @Override
     protected void onFailure(@NonNull Exception e) {

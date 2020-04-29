@@ -42,20 +42,15 @@
       android:layout_toEndOf="@id/firePreview"
       android:background="#000">
 
-      <Spinner
-          android:id="@+id/spinner"
-          android:layout_width="wrap_content"
-
-          android:layout_height="wrap_content"
-          android:layout_gravity="center" />
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Face Detection"
+            android:text="Shot"
+            android:id="@+id/score_button"
             android:textColor="@android:color/white"
             android:textSize="20dp"
             android:layout_gravity="center"
-            ></TextView>
+            ></Button>
       <ToggleButton
           android:id="@+id/facingSwitch"
           android:layout_width="48dp"

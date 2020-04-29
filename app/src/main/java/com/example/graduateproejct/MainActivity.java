@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -96,21 +97,27 @@ public final class MainActivity extends AppCompatActivity
             Log.d(TAG, "graphicOverlay is null");
         }
 
-        Spinner spinner = findViewById(R.id.spinner);
+
         List<String> options = new ArrayList<>();
         options.add(FACE_CONTOUR);
         options.add(FACE_DETECTION);
         //options.add(OBJECT_DETECTION);
 
         // Creating adapter for spinner
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_style,
-                options);
-        // Drop down layout style - list view with radio button
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // attaching data adapter to spinner
-        spinner.setAdapter(dataAdapter);
-        spinner.setOnItemSelectedListener(this);
 
+        // Drop down layout style - list view with radio button
+
+        // attaching data adapter to spinner
+        Button scoreButton = findViewById(R.id.score_button);
+        scoreButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                MyApplication myApplication = (MyApplication)getApplicationContext();
+                myApplication.setmGlobalValue(1);
+                Toast.makeText(getApplicationContext(), Integer.toString(myApplication.getGlobalValue()),Toast.LENGTH_SHORT).show();
+            }
+        });
         ToggleButton facingSwitch = findViewById(R.id.facingSwitch);
         facingSwitch.setOnCheckedChangeListener(this);
         //facingSwitch.setVisibility(View.INVISIBLE);

@@ -18,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.graduateproejct.MainActivity;
+import com.example.graduateproejct.MyApplication;
 import com.google.firebase.ml.vision.common.FirebaseVisionPoint;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour;
@@ -39,14 +40,15 @@ public class FaceContourGraphic extends Graphic {
   private static final float ID_Y_OFFSET = 80.0f;
   private static final float ID_X_OFFSET = -70.0f;
   private static final float BOX_STROKE_WIDTH = 5.0f;
-
+  private int stop = 0;
   private final Paint facePositionPaint;
   private final Paint idPaint;
   private final Paint boxPaint;
-
+  float score;
   float left_eye_x = 0, left_eye_y = 0, right_eye_x = 0, right_eye_y = 0, nose_x = 0, nose_y = 0, left_mouth_x = 0, left_mouth_y = 0, right_mouth_x = 0, right_mouth_y = 0, chin_x = 0, chin_y = 0;
+  float ratio = 0;
   private volatile FirebaseVisionFace firebaseVisionFace;
-
+  MyApplication myApplication = (MyApplication)getApplicationContext();
   public FaceContourGraphic(GraphicOverlay overlay, FirebaseVisionFace face) {
     super(overlay);
 
@@ -69,10 +71,17 @@ public class FaceContourGraphic extends Graphic {
   public void requestLogin() {
     String url = "http://ec2-54-180-120-138.ap-northeast-2.compute.amazonaws.com:3000/";
 
+    score = myApplication.getGlobalValue();
+    Log.i("Server", "스코어 점수 : " + String.valueOf(score));
+    if (score == 1) {
+      Log.i("Server", "스탑1됨");
+      stop = 1;
+    }
     //JSON형식으로 데이터 통신을 진행합니다!
     JSONObject testjson = new JSONObject();
     try {
       //입력해둔 edittext의 id와 pw값을 받아와 put해줍니다 : 데이터를 json형식으로 바꿔 넣어주었습니다.
+      testjson.put("ratio", Float.toString(ratio));
       testjson.put("lex", Float.toString(left_eye_x));
       testjson.put("ley", Float.toString(left_eye_y));
       testjson.put("rex", Float.toString(right_eye_x));
@@ -85,7 +94,7 @@ public class FaceContourGraphic extends Graphic {
       testjson.put("rmy", Float.toString(right_mouth_y));
       testjson.put("chx", Float.toString(chin_x));
       testjson.put("chy", Float.toString(chin_y));
-
+      testjson.put("score",Float.toString(score));
       String jsonString = testjson.toString(); //완성된 json 포맷
       Log.i("Server", "Json Value : " + jsonString);
 
@@ -96,10 +105,13 @@ public class FaceContourGraphic extends Graphic {
         @Override
         public void onResponse(JSONObject response) {
           try {
+            stop = 0;
+            myApplication.setmGlobalValue(0);
+            Log.i("Server", "스코어 0으로 바꿈");
             //받은 json형식의 응답을 받아
             JSONObject jsonObject = new JSONObject(response.toString());
 
-            //key값에 따라 value값을 쪼개 받아옵니다.
+            //key값에 따라 value2값을 쪼개 받아옵니다.
             String result = jsonObject.getString("result");
 
 
@@ -165,7 +177,7 @@ public class FaceContourGraphic extends Graphic {
     for (FirebaseVisionPoint point : contour.getPoints()) {
       float px = translateX(point.getX());
       float py = translateY(point.getY());
-
+      ratio = (((right - left)*(bottom - top))/(1080*1440))*100;
       if (number == 77 || number == 85 || number == 81 || number == 73 || number == 61 || number == 69 || number == 65 || number == 57 || number == 128 || number == 99 || number == 89 || number == 19) {
         canvas.drawCircle(px, py, FACE_POSITION_RADIUS, facePositionPaint);
         if (number == 73 || number == 81) {
@@ -198,7 +210,10 @@ public class FaceContourGraphic extends Graphic {
     right_eye_x /= 2;
     right_eye_y /= 2;
     Log.e("coordinates", "\nleft_eye : " + left_eye_x + ", " + left_eye_y + "\nright_eye : " + right_eye_x + ", " + right_eye_y + "\nnose : " + nose_x + ", " + nose_y + "\nleft_mouth : " + left_mouth_x + ", " + left_mouth_y + "\nright_mouth : " + right_mouth_x + ", " + right_mouth_y + "\nchin : " + chin_x + ", " + chin_y);
-     requestLogin();
+    Log.i("Server", String.valueOf(stop));
+    if (stop != 1) {
+      requestLogin();
+    }
 
     //requestLogin();
     FirebaseVisionFaceLandmark leftEye = face.getLandmark(FirebaseVisionFaceLandmark.LEFT_EYE);
