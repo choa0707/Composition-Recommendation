@@ -1,12 +1,13 @@
 package com.example.graduateproejct.facedetect;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.graduateproejct.MyApplication;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
@@ -27,10 +28,11 @@ import java.util.List;
 public class FaceContourDetectorProcessor extends VisionProcessorBase<List<FirebaseVisionFace>> {
     int forcount = 0;
     private static final String TAG = "FaceContourDetectorProc";
-
+    Context mcontext;
     private final FirebaseVisionFaceDetector detector;
 
-    public FaceContourDetectorProcessor() {
+    public FaceContourDetectorProcessor(Context mccontext) {
+        mcontext = mccontext;
         FirebaseVisionFaceDetectorOptions options =
                 new FirebaseVisionFaceDetectorOptions.Builder()
                         .setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST)
@@ -68,10 +70,10 @@ public class FaceContourDetectorProcessor extends VisionProcessorBase<List<Fireb
         forcount++;
         if (forcount >= 2100000000) { forcount = 0;}
         else {
-            if(forcount%40 == 0) {
+            if(forcount%25 == 0) {
                 for (int i = 0; i < faces.size(); ++i) {
                     FirebaseVisionFace face = faces.get(i);
-                    FaceContourGraphic faceGraphic = new FaceContourGraphic(graphicOverlay, face);
+                    FaceContourGraphic faceGraphic = new FaceContourGraphic(graphicOverlay, face, mcontext);
                     graphicOverlay.add(faceGraphic);
                 }
                 graphicOverlay.postInvalidate();

@@ -1,5 +1,7 @@
 package com.example.graduateproejct.facedetect;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,6 +10,8 @@ import android.graphics.Point;
 import android.media.FaceDetector;
 import android.util.Log;
 import android.view.Display;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -19,6 +23,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.graduateproejct.MainActivity;
 import com.example.graduateproejct.MyApplication;
+import com.example.graduateproejct.R;
 import com.google.firebase.ml.vision.common.FirebaseVisionPoint;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour;
@@ -28,13 +33,17 @@ import com.example.graduateproejct.common.GraphicOverlay.Graphic;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 /** Graphic instance for rendering face contours graphic overlay view. */
 public class FaceContourGraphic extends Graphic {
-
+  String result_score;
+  String roll;
+  String yaw ;
+  String pitch ;
   private static final float FACE_POSITION_RADIUS = 4.0f;
   private static final float ID_TEXT_SIZE = 30.0f;
   private static final float ID_Y_OFFSET = 80.0f;
@@ -42,15 +51,19 @@ public class FaceContourGraphic extends Graphic {
   private static final float BOX_STROKE_WIDTH = 5.0f;
   private int stop = 0;
   private final Paint facePositionPaint;
+
   private final Paint idPaint;
   private final Paint boxPaint;
+  private Context mcontext;
   float score;
   float left_eye_x = 0, left_eye_y = 0, right_eye_x = 0, right_eye_y = 0, nose_x = 0, nose_y = 0, left_mouth_x = 0, left_mouth_y = 0, right_mouth_x = 0, right_mouth_y = 0, chin_x = 0, chin_y = 0;
   float ratio = 0;
   private volatile FirebaseVisionFace firebaseVisionFace;
   MyApplication myApplication = (MyApplication)getApplicationContext();
-  public FaceContourGraphic(GraphicOverlay overlay, FirebaseVisionFace face) {
+  public FaceContourGraphic(GraphicOverlay overlay, FirebaseVisionFace face, Context context) {
     super(overlay);
+
+    mcontext = context;
 
     this.firebaseVisionFace = face;
     final int selectedColor = Color.WHITE;
@@ -96,7 +109,6 @@ public class FaceContourGraphic extends Graphic {
       testjson.put("chy", Float.toString(chin_y));
       testjson.put("score",Float.toString(score));
       String jsonString = testjson.toString(); //완성된 json 포맷
-      Log.i("Server", "Json Value : " + jsonString);
 
       final RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
       final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, testjson, new Response.Listener<JSONObject>() {
@@ -112,15 +124,22 @@ public class FaceContourGraphic extends Graphic {
             JSONObject jsonObject = new JSONObject(response.toString());
 
             //key값에 따라 value2값을 쪼개 받아옵니다.
-            String result = jsonObject.getString("result");
-
-
-            if (result.equals("OK")) {
-              Log.i("Server", "communication OK");
-            } else {
-              Log.i("Server", "communication Fail");
+            result_score = jsonObject.getString("score");
+            if(Integer.parseInt(result_score) != -1)
+            {
+              myApplication.setScore(result_score);
             }
+            roll = jsonObject.getString("roll");
+            yaw = jsonObject.getString("yaw");
+            pitch = jsonObject.getString("pitch");
+            Log.i("Server", result_score+", "+roll+","+yaw+","+pitch);
 
+            ((MainActivity)mcontext).textView.setText("각도 (X: "+roll + ", Y: " + pitch + ", Z: "+yaw+")         점수: "+ myApplication.getScore());
+            ((MainActivity)mcontext).scoreButton.setClickable(true);
+            ((MainActivity)mcontext).scoreButton.setText("점수계산");
+            //textView.setText(result_score+", "+roll + ", " + pitch + ", "+yaw);
+            Log.i("Server", result_score+", "+roll+","+yaw+","+pitch);
+            Log.i("Server", "요건되네");
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -157,7 +176,7 @@ public class FaceContourGraphic extends Graphic {
 
     Paint paint = new Paint();
     paint.setColor(Color.BLACK);
-    canvas.drawCircle(x, y, FACE_POSITION_RADIUS + 2, paint);
+    //canvas.drawCircle(x, y, FACE_POSITION_RADIUS + 2, paint);
     //canvas.drawText("id3: " + face.getTrackingId(), x + ID_X_OFFSET, y + ID_Y_OFFSET, idPaint);
 
     // Draws a bounding box around the face.
@@ -167,9 +186,12 @@ public class FaceContourGraphic extends Graphic {
     float top = y - yOffset;
     float right = x + xOffset;
     float bottom = y + yOffset;
-    canvas.drawRect(left, top - 30, right, bottom - 30, boxPaint);
-    paint.setTextSize(30.0f);
-    canvas.drawText("size : " + Float.toString(right - left) + " * " + Float.toString(bottom - top), x + face.getBoundingBox().width() * 2 + 30, y + face.getBoundingBox().height() * 2 + 30, paint);
+
+    //canvas.drawRect(left, top - 30, right, bottom - 30, boxPaint);
+
+    paint.setTextSize(50.0f);
+    //canvas.drawText(result_score+", "+roll+","+yaw+","+pitch, 100, 100, paint);
+    //canvas.drawText("size : " + Float.toString(right - left) + " * " + Float.toString(bottom - top), x + face.getBoundingBox().width() * 2 + 30, y + face.getBoundingBox().height() * 2 + 30, paint);
     FirebaseVisionFaceContour contour = face.getContour(FirebaseVisionFaceContour.ALL_POINTS);
 
     int number = 1;
@@ -179,7 +201,7 @@ public class FaceContourGraphic extends Graphic {
       float py = translateY(point.getY());
       ratio = (((right - left)*(bottom - top))/(1080*1440))*100;
       if (number == 77 || number == 85 || number == 81 || number == 73 || number == 61 || number == 69 || number == 65 || number == 57 || number == 128 || number == 99 || number == 89 || number == 19) {
-        canvas.drawCircle(px, py, FACE_POSITION_RADIUS, facePositionPaint);
+        //canvas.drawCircle(px, py, FACE_POSITION_RADIUS, facePositionPaint);
         if (number == 73 || number == 81) {
           Log.i("왼쪽눈", Float.toString(px));
           left_eye_x += px;

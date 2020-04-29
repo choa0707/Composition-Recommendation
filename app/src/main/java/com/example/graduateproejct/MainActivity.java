@@ -32,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -66,12 +67,14 @@ public final class MainActivity extends AppCompatActivity
         implements OnRequestPermissionsResultCallback,
         OnItemSelectedListener,
         CompoundButton.OnCheckedChangeListener {
+    public Context ttcontext;
     private static final String FACE_DETECTION = "Face Detection";
+    public Button scoreButton;
     private static final String OBJECT_DETECTION = "Object Detection";
     private static final String FACE_CONTOUR = "Face Contour";
     private static final String TAG = "MainActivity";
     private static final int PERMISSION_REQUESTS = 1;
-
+    public TextView textView;
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
@@ -80,12 +83,14 @@ public final class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_live_preview);
+        scoreButton = findViewById(R.id.score_button);
         Display display = getWindowManager().getDefaultDisplay();
-
+        textView = findViewById(R.id.result_text);
         Point size = new Point();
-
+        ttcontext = this;
         display.getSize(size);
 
         preview = findViewById(R.id.firePreview);
@@ -108,14 +113,16 @@ public final class MainActivity extends AppCompatActivity
         // Drop down layout style - list view with radio button
 
         // attaching data adapter to spinner
-        Button scoreButton = findViewById(R.id.score_button);
+
         scoreButton.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
                 MyApplication myApplication = (MyApplication)getApplicationContext();
                 myApplication.setmGlobalValue(1);
-                Toast.makeText(getApplicationContext(), Integer.toString(myApplication.getGlobalValue()),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), Integer.toString(myApplication.getGlobalValue()),Toast.LENGTH_SHORT).show();
+                scoreButton.setClickable(false);
+                scoreButton.setText("계산중");
             }
         });
         ToggleButton facingSwitch = findViewById(R.id.facingSwitch);
@@ -138,8 +145,8 @@ public final class MainActivity extends AppCompatActivity
     public synchronized void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         // An item was selected. You can retrieve the selected item using
         // parent.getItemAtPosition(pos)
-        selectedModel = parent.getItemAtPosition(pos).toString();
-        Log.d(TAG, "Selected model: " + selectedModel);
+        //selectedModel = parent.getItemAtPosition(pos).toString();
+        //Log.d(TAG, "Selected model: " + selectedModel);
         preview.stop();
         if (allPermissionsGranted()) {
             createCameraSource(selectedModel);
@@ -203,6 +210,7 @@ public final class MainActivity extends AppCompatActivity
                     break;
 
                 case OBJECT_DETECTION:
+                    Log.i("Main", "Success");
                     Log.i(TAG, "Using Object Detector Processor");
                     FirebaseVisionObjectDetectorOptions objectDetectorOptions =
                             new FirebaseVisionObjectDetectorOptions.Builder()
@@ -215,7 +223,7 @@ public final class MainActivity extends AppCompatActivity
 
                 case FACE_CONTOUR:
                     Log.i(TAG, "Using Face Contour Detector Processor");
-                    cameraSource.setMachineLearningFrameProcessor(new FaceContourDetectorProcessor());
+                    cameraSource.setMachineLearningFrameProcessor(new FaceContourDetectorProcessor(ttcontext));
                     break;
                 default:
                     Log.e(TAG, "Unknown model: " + model);
