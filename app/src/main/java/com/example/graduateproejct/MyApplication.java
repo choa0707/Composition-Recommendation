@@ -4,12 +4,23 @@ import android.app.Application;
 
 public class MyApplication extends Application
 {
+    private int stop;
+
+    public int getStop() {
+        return stop;
+    }
+
+    public void setStop(int stop) {
+        this.stop = stop;
+    }
+
     private int mGlobalValue;
     private String score;
     @Override
     public void onCreate() {
         mGlobalValue = 0;
         score = " ";
+        stop = 0;
         super.onCreate();
     }
     public void onTerminate() {

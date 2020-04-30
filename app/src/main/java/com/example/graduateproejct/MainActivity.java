@@ -128,10 +128,10 @@ public final class MainActivity extends AppCompatActivity
         ToggleButton facingSwitch = findViewById(R.id.facingSwitch);
         facingSwitch.setOnCheckedChangeListener(this);
         //facingSwitch.setVisibility(View.INVISIBLE);
-        facingSwitch.setBackgroundColor(Color.TRANSPARENT);
+        //facingSwitch.setBackgroundColor(Color.TRANSPARENT);
         // Hide the toggle button if there is only 1 camera
         if (Camera.getNumberOfCameras() == 1) {
-            facingSwitch.setVisibility(View.GONE);
+            //facingSwitch.setVisibility(View.GONE);
         }
 
         if (allPermissionsGranted()) {

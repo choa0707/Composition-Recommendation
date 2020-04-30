@@ -42,6 +42,7 @@ import java.util.TimerTask;
 public class FaceContourGraphic extends Graphic {
   String result_score;
   String roll;
+  String help;
   String yaw ;
   String pitch ;
   private static final float FACE_POSITION_RADIUS = 4.0f;
@@ -49,7 +50,7 @@ public class FaceContourGraphic extends Graphic {
   private static final float ID_Y_OFFSET = 80.0f;
   private static final float ID_X_OFFSET = -70.0f;
   private static final float BOX_STROKE_WIDTH = 5.0f;
-  private int stop = 0;
+  private int stop;
   private final Paint facePositionPaint;
 
   private final Paint idPaint;
@@ -74,7 +75,7 @@ public class FaceContourGraphic extends Graphic {
     idPaint = new Paint();
     idPaint.setColor(selectedColor);
     idPaint.setTextSize(ID_TEXT_SIZE);
-
+    stop = myApplication.getStop();
     boxPaint = new Paint();
     boxPaint.setColor(selectedColor);
     boxPaint.setStyle(Paint.Style.STROKE);
@@ -82,13 +83,13 @@ public class FaceContourGraphic extends Graphic {
   }
 
   public void requestLogin() {
-    String url = "http://ec2-54-180-120-138.ap-northeast-2.compute.amazonaws.com:3000/";
+    String url = "http://ec2-54-180-120-138.ap-northeast-2.compute.amazonaws.com:4000/";
 
     score = myApplication.getGlobalValue();
-    Log.i("Server", "스코어 점수 : " + String.valueOf(score));
+
     if (score == 1) {
-      Log.i("Server", "스탑1됨");
-      stop = 1;
+
+      myApplication.setStop(1);
     }
     //JSON형식으로 데이터 통신을 진행합니다!
     JSONObject testjson = new JSONObject();
@@ -117,9 +118,10 @@ public class FaceContourGraphic extends Graphic {
         @Override
         public void onResponse(JSONObject response) {
           try {
-            stop = 0;
+            myApplication.setStop(0);
+
             myApplication.setmGlobalValue(0);
-            Log.i("Server", "스코어 0으로 바꿈");
+
             //받은 json형식의 응답을 받아
             JSONObject jsonObject = new JSONObject(response.toString());
 
@@ -132,14 +134,41 @@ public class FaceContourGraphic extends Graphic {
             roll = jsonObject.getString("roll");
             yaw = jsonObject.getString("yaw");
             pitch = jsonObject.getString("pitch");
-            Log.i("Server", result_score+", "+roll+","+yaw+","+pitch);
+            help = jsonObject.getString("help");
+
 
             ((MainActivity)mcontext).textView.setText("각도 (X: "+roll + ", Y: " + pitch + ", Z: "+yaw+")         점수: "+ myApplication.getScore());
             ((MainActivity)mcontext).scoreButton.setClickable(true);
             ((MainActivity)mcontext).scoreButton.setText("점수계산");
             //textView.setText(result_score+", "+roll + ", " + pitch + ", "+yaw);
-            Log.i("Server", result_score+", "+roll+","+yaw+","+pitch);
-            Log.i("Server", "요건되네");
+            Log.i("Server", "점수: "+result_score+", Roll: "+roll+", Yaw: "+yaw+", Pitch: "+pitch+", 지도 방향: "+help);
+            if (Integer.parseInt(result_score) >= 4){
+              Toast.makeText(getApplicationContext(), "좋은 구도에요!", Toast.LENGTH_LONG).show();
+            }
+            switch (Integer.parseInt(help)){
+              case 1:
+                Toast.makeText(getApplicationContext(), "고개를 들어주세요!", Toast.LENGTH_LONG).show();
+                break;
+              case 2:
+                Toast.makeText(getApplicationContext(), "고개를 내려주세요!", Toast.LENGTH_LONG).show();
+                break;
+              case 3:
+                Toast.makeText(getApplicationContext(), "고개를 왼쪽으로 돌려주세요!", Toast.LENGTH_LONG).show();
+                break;
+              case 4:
+                Toast.makeText(getApplicationContext(), "고개를 오른쪽으로 돌려주세요!", Toast.LENGTH_LONG).show();
+                break;
+              case 5:
+                Toast.makeText(getApplicationContext(), "고개를 시계방향으로 돌려주세요!", Toast.LENGTH_LONG).show();
+                break;
+              case 6:
+                Toast.makeText(getApplicationContext(), "고개를 반시계방향으로 돌려주세요!", Toast.LENGTH_LONG).show();
+                break;
+              case 7:
+                Toast.makeText(getApplicationContext(), "카메라를 멀리하세요!", Toast.LENGTH_LONG).show();
+                break;
+            }
+
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -232,7 +261,8 @@ public class FaceContourGraphic extends Graphic {
     right_eye_x /= 2;
     right_eye_y /= 2;
     Log.e("coordinates", "\nleft_eye : " + left_eye_x + ", " + left_eye_y + "\nright_eye : " + right_eye_x + ", " + right_eye_y + "\nnose : " + nose_x + ", " + nose_y + "\nleft_mouth : " + left_mouth_x + ", " + left_mouth_y + "\nright_mouth : " + right_mouth_x + ", " + right_mouth_y + "\nchin : " + chin_x + ", " + chin_y);
-    Log.i("Server", String.valueOf(stop));
+    stop = myApplication.getStop();
+
     if (stop != 1) {
       requestLogin();
     }
